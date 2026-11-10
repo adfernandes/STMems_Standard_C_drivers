@@ -218,7 +218,7 @@ void lsm6dsv16x_sensor_fusion(void)
   platform_delay(BOOT_TIME);
 
   /* Check device ID */
-  lsm6dsv16x_device_id_get(&dev_ctx, &whoamI);
+  lsm6dsv16x_get_device_id(&dev_ctx, &whoamI);
 
   if (whoamI != LSM6DSV16X_ID)
     while (1);
@@ -227,32 +227,32 @@ void lsm6dsv16x_sensor_fusion(void)
   lsm6dsv16x_sw_por(&dev_ctx);
 
   /* Enable Block Data Update */
-  lsm6dsv16x_block_data_update_set(&dev_ctx, PROPERTY_ENABLE);
+  lsm6dsv16x_set_block_data_update(&dev_ctx, PROPERTY_ENABLE);
   /* Set full scale */
-  lsm6dsv16x_xl_full_scale_set(&dev_ctx, LSM6DSV16X_4g);
-  lsm6dsv16x_gy_full_scale_set(&dev_ctx, LSM6DSV16X_2000dps);
+  lsm6dsv16x_set_xl_full_scale(&dev_ctx, LSM6DSV16X_4g);
+  lsm6dsv16x_set_gy_full_scale(&dev_ctx, LSM6DSV16X_2000dps);
 
   /*
    * Set FIFO watermark (number of unread sensor data TAG + 6 bytes
    * stored in FIFO) to FIFO_WATERMARK samples
    */
-  lsm6dsv16x_fifo_watermark_set(&dev_ctx, FIFO_WATERMARK);
+  lsm6dsv16x_set_fifo_watermark(&dev_ctx, FIFO_WATERMARK);
 
   /* Set FIFO batch of sflp data */
   fifo_sflp.game_rotation = 1;
   fifo_sflp.gravity = 1;
   fifo_sflp.gbias = 1;
-  lsm6dsv16x_fifo_sflp_batch_set(&dev_ctx, fifo_sflp);
+  lsm6dsv16x_set_fifo_sflp_batch(&dev_ctx, fifo_sflp);
 
   /* Set FIFO mode to Stream mode (aka Continuous Mode) */
-  lsm6dsv16x_fifo_mode_set(&dev_ctx, LSM6DSV16X_STREAM_MODE);
+  lsm6dsv16x_set_fifo_mode(&dev_ctx, LSM6DSV16X_STREAM_MODE);
 
   /* Set Output Data Rate */
-  lsm6dsv16x_xl_data_rate_set(&dev_ctx, LSM6DSV16X_ODR_AT_30Hz);
-  lsm6dsv16x_gy_data_rate_set(&dev_ctx, LSM6DSV16X_ODR_AT_30Hz);
-  lsm6dsv16x_sflp_data_rate_set(&dev_ctx, LSM6DSV16X_SFLP_30Hz);
+  lsm6dsv16x_set_xl_data_rate(&dev_ctx, LSM6DSV16X_ODR_AT_30Hz);
+  lsm6dsv16x_set_gy_data_rate(&dev_ctx, LSM6DSV16X_ODR_AT_30Hz);
+  lsm6dsv16x_set_sflp_data_rate(&dev_ctx, LSM6DSV16X_SFLP_30Hz);
 
-  lsm6dsv16x_sflp_game_rotation_set(&dev_ctx, PROPERTY_ENABLE);
+  lsm6dsv16x_set_sflp_game_rotation(&dev_ctx, PROPERTY_ENABLE);
 
   /*
    * here application may initialize offset with latest values
@@ -261,14 +261,14 @@ void lsm6dsv16x_sensor_fusion(void)
   gbias.gbias_x = 0.0f;
   gbias.gbias_y = 0.0f;
   gbias.gbias_z = 0.0f;
-  lsm6dsv16x_sflp_game_gbias_set(&dev_ctx, &gbias);
+  lsm6dsv16x_set_sflp_game_gbias(&dev_ctx, &gbias);
 
   /* Wait samples */
   while (1) {
     uint16_t num = 0;
 
     /* Read watermark flag */
-    lsm6dsv16x_fifo_status_get(&dev_ctx, &fifo_status);
+    lsm6dsv16x_get_fifo_status(&dev_ctx, &fifo_status);
 
     if (fifo_status.fifo_th == 1) {
       num = fifo_status.fifo_level;
@@ -284,7 +284,7 @@ void lsm6dsv16x_sensor_fusion(void)
         float_t gbias_mdps[3];
 
         /* Read FIFO sensor value */
-        lsm6dsv16x_fifo_out_raw_get(&dev_ctx, &f_data);
+        lsm6dsv16x_get_fifo_out_raw(&dev_ctx, &f_data);
 
         switch (f_data.tag) {
         case LSM6DSV16X_SFLP_GYROSCOPE_BIAS_TAG:

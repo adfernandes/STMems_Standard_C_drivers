@@ -161,7 +161,7 @@ void lsm6dsv16x_tilt_handler(void)
   lsm6dsv16x_embedded_status_t status;
 
   /* Read output only if new xl value is available */
-  lsm6dsv16x_embedded_status_get(&dev_ctx, &status);
+  lsm6dsv16x_get_embedded_status(&dev_ctx, &status);
 
   if (status.tilt) {
     tilt_event_catched = 1;
@@ -186,7 +186,7 @@ void lsm6dsv16x_tilt(void)
   platform_delay(BOOT_TIME);
 
   /* Check device ID */
-  lsm6dsv16x_device_id_get(&dev_ctx, &whoamI);
+  lsm6dsv16x_get_device_id(&dev_ctx, &whoamI);
 
   if (whoamI != LSM6DSV16X_ID)
     while (1);
@@ -195,25 +195,25 @@ void lsm6dsv16x_tilt(void)
   lsm6dsv16x_sw_por(&dev_ctx);
 
   /* Enable Block Data Update */
-  lsm6dsv16x_block_data_update_set(&dev_ctx, PROPERTY_ENABLE);
+  lsm6dsv16x_set_block_data_update(&dev_ctx, PROPERTY_ENABLE);
 
 #if defined(NUCLEO_H503RB)
   /* if I3C is used then INT pin must be explicitly enabled */
-  lsm6dsv16x_i3c_int_en_set(&dev_ctx, 1);
+  lsm6dsv16x_set_i3c_int_en(&dev_ctx, 1);
 #endif
 
-  lsm6dsv16x_tilt_mode_set(&dev_ctx, 1);
+  lsm6dsv16x_set_tilt_mode(&dev_ctx, 1);
 
   pin_int.tilt = PROPERTY_ENABLE;
-  lsm6dsv16x_emb_pin_int1_route_set(&dev_ctx, &pin_int);
+  lsm6dsv16x_set_emb_pin_int1_route(&dev_ctx, &pin_int);
   //lsm6dsv16x_emb_pin_int2_route_set(&dev_ctx, &pin_int);
 
-  lsm6dsv16x_embedded_int_cfg_set(&dev_ctx, LSM6DSV16X_INT_LATCH_ENABLE);
+  lsm6dsv16x_set_embedded_int_cfg(&dev_ctx, LSM6DSV16X_INT_LATCH_ENABLE);
 
   /* Set Output Data Rate.*/
-  lsm6dsv16x_xl_data_rate_set(&dev_ctx, LSM6DSV16X_ODR_AT_120Hz);
+  lsm6dsv16x_set_xl_data_rate(&dev_ctx, LSM6DSV16X_ODR_AT_120Hz);
   /* Set full scale */
-  lsm6dsv16x_xl_full_scale_set(&dev_ctx, LSM6DSV16X_2g);
+  lsm6dsv16x_set_xl_full_scale(&dev_ctx, LSM6DSV16X_2g);
 
   /* wait forever (6D event handle in irq handler) */
   while (1) {

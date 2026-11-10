@@ -145,15 +145,15 @@ static volatile uint8_t deglance_event_catched = 0;
 void lsm6dsv32x_fsm_glance_handler(void)
 {
   lsm6dsv32x_all_sources_t status;
-  lsm6dsv32x_fsm_out_t fsm_out;
+  uint8_t fsm_out[8];
 
   /* Read output only if new xl value is available */
-  lsm6dsv32x_all_sources_get(&dev_ctx, &status);
+  lsm6dsv32x_get_all_sources(&dev_ctx, &status);
 
   if (status.fsm1) {
-    lsm6dsv32x_fsm_out_get(&dev_ctx, &fsm_out);
+    lsm6dsv32x_get_fsm_out(&dev_ctx, fsm_out);
 
-    switch(fsm_out.fsm_outs1) {
+    switch(fsm_out[0]) {
     case 0x20:
       glance_event_catched = 1;
       break;
@@ -182,7 +182,7 @@ void lsm6dsv32x_fsm_glance(void)
   platform_delay(BOOT_TIME);
 
   /* Check device ID */
-  lsm6dsv32x_device_id_get(&dev_ctx, &whoamI);
+  lsm6dsv32x_get_device_id(&dev_ctx, &whoamI);
 
   if (whoamI != LSM6DSV32X_ID)
     while (1);

@@ -147,7 +147,7 @@ void lsm6dsv_sixd_handler(void)
   lsm6dsv_all_sources_t status;
 
   /* Read output only if new xl value is available */
-  lsm6dsv_all_sources_get(&dev_ctx, &status);
+  lsm6dsv_get_all_sources(&dev_ctx, &status);
 
   if (status.six_d) {
     sixd_event_catched = (status.six_d    << 6) |
@@ -178,7 +178,7 @@ void lsm6dsv_sixd(void)
   platform_delay(BOOT_TIME);
 
   /* Check device ID */
-  lsm6dsv_device_id_get(&dev_ctx, &whoamI);
+  lsm6dsv_get_device_id(&dev_ctx, &whoamI);
 
   if (whoamI != LSM6DSV_ID)
     while (1);
@@ -187,23 +187,23 @@ void lsm6dsv_sixd(void)
   lsm6dsv_sw_por(&dev_ctx);
 
   /* Enable Block Data Update */
-  lsm6dsv_block_data_update_set(&dev_ctx, PROPERTY_ENABLE);
+  lsm6dsv_set_block_data_update(&dev_ctx, PROPERTY_ENABLE);
 
   pin_int.sixd = PROPERTY_ENABLE;
-  lsm6dsv_pin_int1_route_set(&dev_ctx, &pin_int);
+  lsm6dsv_set_pin_int1_route(&dev_ctx, &pin_int);
   //lsm6dsv_pin_int2_route_set(&dev_ctx, &pin_int);
 
   irq.enable = 1;
   irq.lir = 1;
-  lsm6dsv_interrupt_enable_set(&dev_ctx, irq);
+  lsm6dsv_set_interrupt_enable(&dev_ctx, irq);
 
-  lsm6dsv_filt_sixd_feed_set(&dev_ctx, LSM6DSV_SIXD_FEED_LOW_PASS);
-  lsm6dsv_6d_threshold_set(&dev_ctx, LSM6DSV_DEG_60);
+  lsm6dsv_set_filt_sixd_feed(&dev_ctx, LSM6DSV_SIXD_FEED_LOW_PASS);
+  lsm6dsv_set_6d_threshold(&dev_ctx, LSM6DSV_DEG_60);
 
   /* Set Output Data Rate.*/
-  lsm6dsv_xl_data_rate_set(&dev_ctx, LSM6DSV_ODR_AT_120Hz);
+  lsm6dsv_set_xl_data_rate(&dev_ctx, LSM6DSV_ODR_AT_120Hz);
   /* Set full scale */
-  lsm6dsv_xl_full_scale_set(&dev_ctx, LSM6DSV_2g);
+  lsm6dsv_set_xl_full_scale(&dev_ctx, LSM6DSV_2g);
 
   /* wait forever (6D event handle in irq handler) */
   while (1) {

@@ -144,14 +144,14 @@ static volatile uint8_t gym_event_catched = 0;
 void lsm6dsv32x_mlc_gym_handler(void)
 {
   lsm6dsv32x_all_sources_t status;
-  lsm6dsv32x_mlc_out_t mlc_out;
+  uint8_t mlc_out[8];
 
   /* Read output only if new xl value is available */
-  lsm6dsv32x_all_sources_get(&dev_ctx, &status);
+  lsm6dsv32x_get_all_sources(&dev_ctx, &status);
 
   if (status.mlc1) {
-    lsm6dsv32x_mlc_out_get(&dev_ctx, &mlc_out);
-    gym_event_catched = mlc_out.mlc1_src;
+    lsm6dsv32x_get_mlc_out(&dev_ctx, mlc_out);
+    gym_event_catched = mlc_out[0];
   }
 }
 
@@ -173,7 +173,7 @@ void lsm6dsv32x_mlc_gym(void)
   platform_delay(BOOT_TIME);
 
   /* Check device ID */
-  lsm6dsv32x_device_id_get(&dev_ctx, &whoamI);
+  lsm6dsv32x_get_device_id(&dev_ctx, &whoamI);
 
   if (whoamI != LSM6DSV32X_ID)
     while (1);

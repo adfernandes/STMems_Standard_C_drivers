@@ -148,7 +148,7 @@ void lsm6dsv_wakeup_handler(void)
   lsm6dsv_all_sources_t status;
 
   /* Read output only if new xl value is available */
-  lsm6dsv_all_sources_get(&dev_ctx, &status);
+  lsm6dsv_get_all_sources(&dev_ctx, &status);
 
   if (status.wake_up) {
     wu_event_catched = 1;
@@ -173,7 +173,7 @@ void lsm6dsv_wakeup(void)
   platform_delay(BOOT_TIME);
 
   /* Check device ID */
-  lsm6dsv_device_id_get(&dev_ctx, &whoamI);
+  lsm6dsv_get_device_id(&dev_ctx, &whoamI);
 
   if (whoamI != LSM6DSV_ID)
     while (1);
@@ -182,19 +182,19 @@ void lsm6dsv_wakeup(void)
   lsm6dsv_sw_por(&dev_ctx);
 
   /* Enable Block Data Update */
-  lsm6dsv_block_data_update_set(&dev_ctx, PROPERTY_ENABLE);
+  lsm6dsv_set_block_data_update(&dev_ctx, PROPERTY_ENABLE);
 
   pin_int.wakeup = PROPERTY_ENABLE;
-  lsm6dsv_pin_int1_route_set(&dev_ctx, &pin_int);
+  lsm6dsv_set_pin_int1_route(&dev_ctx, &pin_int);
   //lsm6dsv_pin_int2_route_set(&dev_ctx, &pin_int);
 
   irq.enable = 1;
   irq.lir = 1;
-  lsm6dsv_interrupt_enable_set(&dev_ctx, irq);
+  lsm6dsv_set_interrupt_enable(&dev_ctx, irq);
 
-  lsm6dsv_filt_xl_fast_settling_set(&dev_ctx, 1);
-  lsm6dsv_mask_trigger_xl_settl_set(&dev_ctx, 1);
-  lsm6dsv_filt_wkup_act_feed_set(&dev_ctx, LSM6DSV_WK_FEED_HIGH_PASS);
+  lsm6dsv_set_filt_xl_fast_settling(&dev_ctx, 1);
+  lsm6dsv_set_mask_trigger_xl_settl(&dev_ctx, 1);
+  lsm6dsv_set_filt_wkup_act_feed(&dev_ctx, LSM6DSV_WK_FEED_HIGH_PASS);
 
   wu.inactivity_cfg.inact_dur = 0;
   wu.inactivity_cfg.xl_inact_odr = 1;
@@ -202,12 +202,12 @@ void lsm6dsv_wakeup(void)
   wu.inactivity_ths = 0;
   wu.threshold = 1;
   wu.duration = 0;
-  lsm6dsv_act_thresholds_set(&dev_ctx, &wu);
+  lsm6dsv_set_act_thresholds(&dev_ctx, &wu);
 
   /* Set Output Data Rate.*/
-  lsm6dsv_xl_data_rate_set(&dev_ctx, LSM6DSV_ODR_AT_480Hz);
+  lsm6dsv_set_xl_data_rate(&dev_ctx, LSM6DSV_ODR_AT_480Hz);
   /* Set full scale */
-  lsm6dsv_xl_full_scale_set(&dev_ctx, LSM6DSV_2g);
+  lsm6dsv_set_xl_full_scale(&dev_ctx, LSM6DSV_2g);
 
   /* wait forever (WU event handle in irq handler) */
   while (1) {

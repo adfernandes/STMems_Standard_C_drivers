@@ -180,7 +180,7 @@ void lsm6dsv16x_read_data_polling(void)
   platform_delay(BOOT_TIME);
 
   /* Check device ID */
-  lsm6dsv16x_device_id_get(&dev_ctx, &whoamI);
+  lsm6dsv16x_get_device_id(&dev_ctx, &whoamI);
 
   if (whoamI != LSM6DSV16X_ID)
     while (1);
@@ -189,40 +189,40 @@ void lsm6dsv16x_read_data_polling(void)
   lsm6dsv16x_sw_por(&dev_ctx);
 
   /* Enable Block Data Update */
-  lsm6dsv16x_block_data_update_set(&dev_ctx, PROPERTY_ENABLE);
+  lsm6dsv16x_set_block_data_update(&dev_ctx, PROPERTY_ENABLE);
 
   /* Set Output Data Rate.
    * Selected data rate have to be equal or greater with respect
    * with MLC data rate.
    */
-  lsm6dsv16x_xl_data_rate_set(&dev_ctx, LSM6DSV16X_ODR_AT_7Hz5);
-  lsm6dsv16x_gy_data_rate_set(&dev_ctx, LSM6DSV16X_ODR_AT_15Hz);
+  lsm6dsv16x_set_xl_data_rate(&dev_ctx, LSM6DSV16X_ODR_AT_7Hz5);
+  lsm6dsv16x_set_gy_data_rate(&dev_ctx, LSM6DSV16X_ODR_AT_15Hz);
 
   /* Set full scale */
-  lsm6dsv16x_xl_full_scale_set(&dev_ctx, LSM6DSV16X_2g);
-  lsm6dsv16x_gy_full_scale_set(&dev_ctx, LSM6DSV16X_2000dps);
+  lsm6dsv16x_set_xl_full_scale(&dev_ctx, LSM6DSV16X_2g);
+  lsm6dsv16x_set_gy_full_scale(&dev_ctx, LSM6DSV16X_2000dps);
 
   /* Configure filtering chain */
   filt_settling_mask.drdy = PROPERTY_ENABLE;
   filt_settling_mask.irq_xl = PROPERTY_ENABLE;
   filt_settling_mask.irq_g = PROPERTY_ENABLE;
-  lsm6dsv16x_filt_settling_mask_set(&dev_ctx, filt_settling_mask);
-  lsm6dsv16x_filt_gy_lp1_set(&dev_ctx, PROPERTY_ENABLE);
-  lsm6dsv16x_filt_gy_lp1_bandwidth_set(&dev_ctx, LSM6DSV16X_GY_ULTRA_LIGHT);
-  lsm6dsv16x_filt_xl_lp2_set(&dev_ctx, PROPERTY_ENABLE);
-  lsm6dsv16x_filt_xl_lp2_bandwidth_set(&dev_ctx, LSM6DSV16X_XL_STRONG);
+  lsm6dsv16x_set_filt_settling_mask(&dev_ctx, filt_settling_mask);
+  lsm6dsv16x_set_filt_gy_lp1(&dev_ctx, PROPERTY_ENABLE);
+  lsm6dsv16x_set_filt_gy_lp1_bandwidth(&dev_ctx, LSM6DSV16X_GY_ULTRA_LIGHT);
+  lsm6dsv16x_set_filt_xl_lp2(&dev_ctx, PROPERTY_ENABLE);
+  lsm6dsv16x_set_filt_xl_lp2_bandwidth(&dev_ctx, LSM6DSV16X_XL_STRONG);
 
   /* Read samples in polling mode (no int) */
   while (1) {
     lsm6dsv16x_data_ready_t drdy;
 
     /* Read output only if new xl value is available */
-    lsm6dsv16x_flag_data_ready_get(&dev_ctx, &drdy);
+    lsm6dsv16x_get_flag_data_ready(&dev_ctx, &drdy);
 
     if (drdy.drdy_xl) {
       /* Read acceleration field data */
       memset(data_raw_acceleration, 0x00, 3 * sizeof(int16_t));
-      lsm6dsv16x_acceleration_raw_get(&dev_ctx, data_raw_acceleration);
+      lsm6dsv16x_get_acceleration_raw(&dev_ctx, data_raw_acceleration);
       acceleration_mg[0] =
         lsm6dsv16x_from_fs2_to_mg(data_raw_acceleration[0]);
       acceleration_mg[1] =
@@ -239,7 +239,7 @@ void lsm6dsv16x_read_data_polling(void)
     if (drdy.drdy_gy) {
       /* Read angular rate field data */
       memset(data_raw_angular_rate, 0x00, 3 * sizeof(int16_t));
-      lsm6dsv16x_angular_rate_raw_get(&dev_ctx, data_raw_angular_rate);
+      lsm6dsv16x_get_angular_rate_raw(&dev_ctx, data_raw_angular_rate);
       angular_rate_mdps[0] =
         lsm6dsv16x_from_fs2000_to_mdps(data_raw_angular_rate[0]);
       angular_rate_mdps[1] =
@@ -255,7 +255,7 @@ void lsm6dsv16x_read_data_polling(void)
     if (drdy.drdy_temp) {
       /* Read temperature data */
       memset(&data_raw_temperature, 0x00, sizeof(int16_t));
-      lsm6dsv16x_temperature_raw_get(&dev_ctx, &data_raw_temperature);
+      lsm6dsv16x_get_temperature_raw(&dev_ctx, &data_raw_temperature);
       temperature_degC = lsm6dsv16x_from_lsb_to_celsius(
                            data_raw_temperature);
       snprintf((char *)tx_buffer, sizeof(tx_buffer),

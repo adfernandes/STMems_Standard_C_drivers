@@ -163,7 +163,7 @@ void lsm6dsv16x_free_fall_handler(void)
   lsm6dsv16x_all_sources_t status;
 
   /* Read output only if new xl value is available */
-  lsm6dsv16x_all_sources_get(&dev_ctx, &status);
+  lsm6dsv16x_get_all_sources(&dev_ctx, &status);
 
   if (status.free_fall) {
     ff_event_catched = 1;
@@ -186,7 +186,7 @@ void lsm6dsv16x_free_fall(void)
   /* Wait sensor boot time */
   platform_delay(BOOT_TIME);
   /* Check device ID */
-  lsm6dsv16x_device_id_get(&dev_ctx, &whoamI);
+  lsm6dsv16x_get_device_id(&dev_ctx, &whoamI);
 
   if (whoamI != LSM6DSV16X_ID)
     while (1);
@@ -195,28 +195,28 @@ void lsm6dsv16x_free_fall(void)
   lsm6dsv16x_sw_por(&dev_ctx);
 
   /* Enable Block Data Update */
-  lsm6dsv16x_block_data_update_set(&dev_ctx, PROPERTY_ENABLE);
+  lsm6dsv16x_set_block_data_update(&dev_ctx, PROPERTY_ENABLE);
 
 #if defined(NUCLEO_H503RB)
   /* if I3C is used then INT pin must be explicitly enabled */
-  lsm6dsv16x_i3c_int_en_set(&dev_ctx, 1);
+  lsm6dsv16x_set_i3c_int_en(&dev_ctx, 1);
 #endif
 
   pin_int.freefall = PROPERTY_ENABLE;
-  lsm6dsv16x_pin_int1_route_set(&dev_ctx, &pin_int);
+  lsm6dsv16x_set_pin_int1_route(&dev_ctx, &pin_int);
   //lsm6dsv16x_pin_int2_route_set(&dev_ctx, &pin_int);
 
   irq.enable = 1;
   irq.lir = 1;
-  lsm6dsv16x_interrupt_enable_set(&dev_ctx, irq);
+  lsm6dsv16x_set_interrupt_enable(&dev_ctx, irq);
 
-  lsm6dsv16x_ff_time_windows_set(&dev_ctx, 0);
-  lsm6dsv16x_ff_thresholds_set(&dev_ctx, LSM6DSV16X_312_mg);
+  lsm6dsv16x_set_ff_time_windows(&dev_ctx, 0);
+  lsm6dsv16x_set_ff_thresholds(&dev_ctx, LSM6DSV16X_312_mg);
 
   /* Set Output Data Rate.*/
-  lsm6dsv16x_xl_data_rate_set(&dev_ctx, LSM6DSV16X_ODR_AT_120Hz);
+  lsm6dsv16x_set_xl_data_rate(&dev_ctx, LSM6DSV16X_ODR_AT_120Hz);
   /* Set full scale */
-  lsm6dsv16x_xl_full_scale_set(&dev_ctx, LSM6DSV16X_2g);
+  lsm6dsv16x_set_xl_full_scale(&dev_ctx, LSM6DSV16X_2g);
 
   /* wait forever (FF event handle in irq handler) */
   while (1) {

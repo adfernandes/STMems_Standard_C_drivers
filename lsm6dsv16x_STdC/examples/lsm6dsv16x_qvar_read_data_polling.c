@@ -176,7 +176,7 @@ void lsm6dsv16x_qvar_read_data_polling(void)
   platform_delay(BOOT_TIME);
 
   /* Check device ID */
-  lsm6dsv16x_device_id_get(&dev_ctx, &whoamI);
+  lsm6dsv16x_get_device_id(&dev_ctx, &whoamI);
 
   if (whoamI != LSM6DSV16X_ID)
     while (1);
@@ -185,31 +185,31 @@ void lsm6dsv16x_qvar_read_data_polling(void)
   lsm6dsv16x_sw_por(&dev_ctx);
 
   /* Enable Block Data Update */
-  lsm6dsv16x_block_data_update_set(&dev_ctx, PROPERTY_ENABLE);
+  lsm6dsv16x_set_block_data_update(&dev_ctx, PROPERTY_ENABLE);
 
-  lsm6dsv16x_xl_data_rate_set(&dev_ctx, LSM6DSV16X_ODR_AT_15Hz);
-  lsm6dsv16x_xl_full_scale_set(&dev_ctx, LSM6DSV16X_2g);
+  lsm6dsv16x_set_xl_data_rate(&dev_ctx, LSM6DSV16X_ODR_AT_15Hz);
+  lsm6dsv16x_set_xl_full_scale(&dev_ctx, LSM6DSV16X_2g);
 
   /* Configure filtering chain */
   filt_settling_mask.drdy = PROPERTY_ENABLE;
   filt_settling_mask.irq_xl = PROPERTY_ENABLE;
   filt_settling_mask.irq_g = PROPERTY_ENABLE;
-  lsm6dsv16x_filt_settling_mask_set(&dev_ctx, filt_settling_mask);
-  lsm6dsv16x_filt_xl_lp2_set(&dev_ctx, PROPERTY_ENABLE);
-  lsm6dsv16x_filt_xl_lp2_bandwidth_set(&dev_ctx, LSM6DSV16X_XL_STRONG);
+  lsm6dsv16x_set_filt_settling_mask(&dev_ctx, filt_settling_mask);
+  lsm6dsv16x_set_filt_xl_lp2(&dev_ctx, PROPERTY_ENABLE);
+  lsm6dsv16x_set_filt_xl_lp2_bandwidth(&dev_ctx, LSM6DSV16X_XL_STRONG);
 
   /* Enable AH/QVAR function */
   qvar_mode.ah_qvar_en = 1;
-  lsm6dsv16x_ah_qvar_mode_set(&dev_ctx, qvar_mode);
+  lsm6dsv16x_set_ah_qvar_mode(&dev_ctx, qvar_mode);
 
   /* Read samples in polling mode (no int) */
   while(1)
   {
 
     /* Read output only if new values are available */
-    lsm6dsv16x_all_sources_get(&dev_ctx, &all_sources);
+    lsm6dsv16x_get_all_sources(&dev_ctx, &all_sources);
     if ( all_sources.drdy_ah_qvar ) {
-      lsm6dsv16x_ah_qvar_raw_get(&dev_ctx, &data);
+      lsm6dsv16x_get_ah_qvar_raw(&dev_ctx, &data);
 
       snprintf((char*)tx_buffer, sizeof(tx_buffer), "QVAR [mV]:%6.2f\r\n", lsm6dsv16x_from_lsb_to_mv(data));
 

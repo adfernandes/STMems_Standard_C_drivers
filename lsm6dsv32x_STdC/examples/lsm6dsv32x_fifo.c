@@ -174,7 +174,7 @@ void lsm6dsv32x_fifo(void)
   platform_delay(BOOT_TIME);
 
   /* Check device ID */
-  lsm6dsv32x_device_id_get(&dev_ctx, &whoamI);
+  lsm6dsv32x_get_device_id(&dev_ctx, &whoamI);
 
   if (whoamI != LSM6DSV32X_ID)
     while (1);
@@ -183,33 +183,33 @@ void lsm6dsv32x_fifo(void)
   lsm6dsv32x_sw_por(&dev_ctx);
 
   /* Enable Block Data Update */
-  lsm6dsv32x_block_data_update_set(&dev_ctx, PROPERTY_ENABLE);
+  lsm6dsv32x_set_block_data_update(&dev_ctx, PROPERTY_ENABLE);
   /* Set full scale */
-  lsm6dsv32x_xl_full_scale_set(&dev_ctx, LSM6DSV32X_8g);
-  lsm6dsv32x_gy_full_scale_set(&dev_ctx, LSM6DSV32X_2000dps);
+  lsm6dsv32x_set_xl_full_scale(&dev_ctx, LSM6DSV32X_8g);
+  lsm6dsv32x_set_gy_full_scale(&dev_ctx, LSM6DSV32X_2000dps);
   /*
    * Set FIFO watermark (number of unread sensor data TAG + 6 bytes
    * stored in FIFO) to FIFO_WATERMARK samples
    */
-  lsm6dsv32x_fifo_watermark_set(&dev_ctx, FIFO_WATERMARK);
+  lsm6dsv32x_set_fifo_watermark(&dev_ctx, FIFO_WATERMARK);
   /* Set FIFO batch XL/Gyro ODR to 12.5Hz */
-  lsm6dsv32x_fifo_xl_batch_set(&dev_ctx, LSM6DSV32X_XL_BATCHED_AT_60Hz);
-  lsm6dsv32x_fifo_gy_batch_set(&dev_ctx, LSM6DSV32X_GY_BATCHED_AT_15Hz);
+  lsm6dsv32x_set_fifo_xl_batch(&dev_ctx, LSM6DSV32X_XL_BATCHED_AT_60Hz);
+  lsm6dsv32x_set_fifo_gy_batch(&dev_ctx, LSM6DSV32X_GY_BATCHED_AT_15Hz);
   /* Set FIFO mode to Stream mode (aka Continuous Mode) */
-  lsm6dsv32x_fifo_mode_set(&dev_ctx, LSM6DSV32X_STREAM_MODE);
+  lsm6dsv32x_set_fifo_mode(&dev_ctx, LSM6DSV32X_STREAM_MODE);
 
   /* Set Output Data Rate */
-  lsm6dsv32x_xl_data_rate_set(&dev_ctx, LSM6DSV32X_ODR_AT_60Hz);
-  lsm6dsv32x_gy_data_rate_set(&dev_ctx, LSM6DSV32X_ODR_AT_15Hz);
-  lsm6dsv32x_fifo_timestamp_batch_set(&dev_ctx, LSM6DSV32X_TMSTMP_DEC_8);
-  lsm6dsv32x_timestamp_set(&dev_ctx, PROPERTY_ENABLE);
+  lsm6dsv32x_set_xl_data_rate(&dev_ctx, LSM6DSV32X_ODR_AT_60Hz);
+  lsm6dsv32x_set_gy_data_rate(&dev_ctx, LSM6DSV32X_ODR_AT_15Hz);
+  lsm6dsv32x_set_fifo_timestamp_batch(&dev_ctx, LSM6DSV32X_TMSTMP_DEC_8);
+  lsm6dsv32x_set_timestamp(&dev_ctx, PROPERTY_ENABLE);
 
   /* Wait samples */
   while (1) {
     uint16_t num = 0;
 
     /* Read watermark flag */
-    lsm6dsv32x_fifo_status_get(&dev_ctx, &fifo_status);
+    lsm6dsv32x_get_fifo_status(&dev_ctx, &fifo_status);
 
     if (fifo_status.fifo_th == 1) {
       num = fifo_status.fifo_level;
@@ -220,7 +220,7 @@ void lsm6dsv32x_fifo(void)
         lsm6dsv32x_fifo_out_raw_t f_data;
 
         /* Read FIFO sensor value */
-        lsm6dsv32x_fifo_out_raw_get(&dev_ctx, &f_data);
+        lsm6dsv32x_get_fifo_out_raw(&dev_ctx, &f_data);
         datax = (int16_t *)&f_data.data[0];
         datay = (int16_t *)&f_data.data[2];
         dataz = (int16_t *)&f_data.data[4];
@@ -242,7 +242,7 @@ void lsm6dsv32x_fifo(void)
           tx_com(tx_buffer, strlen((char const *)tx_buffer));
           break;
         case LSM6DSV32X_TIMESTAMP_TAG:
-          snprintf((char *)tx_buffer, sizeof(tx_buffer), "TIMESTAMP [ms] %d\r\n", *ts);
+          snprintf((char *)tx_buffer, sizeof(tx_buffer), "TIMESTAMP [ms] %ld\r\n", *ts);
           tx_com(tx_buffer, strlen((char const *)tx_buffer));
           break;
         default:

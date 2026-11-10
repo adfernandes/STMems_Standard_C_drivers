@@ -163,7 +163,7 @@ void lsm6dsv16x_sixd_handler(void)
   lsm6dsv16x_all_sources_t status;
 
   /* Read output only if new xl value is available */
-  lsm6dsv16x_all_sources_get(&dev_ctx, &status);
+  lsm6dsv16x_get_all_sources(&dev_ctx, &status);
 
   if (status.six_d) {
     sixd_event_catched = (status.six_d    << 6) |
@@ -194,7 +194,7 @@ void lsm6dsv16x_sixd(void)
   platform_delay(BOOT_TIME);
 
   /* Check device ID */
-  lsm6dsv16x_device_id_get(&dev_ctx, &whoamI);
+  lsm6dsv16x_get_device_id(&dev_ctx, &whoamI);
 
   if (whoamI != LSM6DSV16X_ID)
     while (1);
@@ -203,28 +203,28 @@ void lsm6dsv16x_sixd(void)
   lsm6dsv16x_sw_por(&dev_ctx);
 
   /* Enable Block Data Update */
-  lsm6dsv16x_block_data_update_set(&dev_ctx, PROPERTY_ENABLE);
+  lsm6dsv16x_set_block_data_update(&dev_ctx, PROPERTY_ENABLE);
 
 #if defined(NUCLEO_H503RB)
   /* if I3C is used then INT pin must be explicitly enabled */
-  lsm6dsv16x_i3c_int_en_set(&dev_ctx, 1);
+  lsm6dsv16x_set_i3c_int_en(&dev_ctx, 1);
 #endif
 
   pin_int.sixd = PROPERTY_ENABLE;
-  lsm6dsv16x_pin_int1_route_set(&dev_ctx, &pin_int);
+  lsm6dsv16x_set_pin_int1_route(&dev_ctx, &pin_int);
   //lsm6dsv16x_pin_int2_route_set(&dev_ctx, &pin_int);
 
   irq.enable = 1;
   irq.lir = 1;
-  lsm6dsv16x_interrupt_enable_set(&dev_ctx, irq);
+  lsm6dsv16x_set_interrupt_enable(&dev_ctx, irq);
 
-  lsm6dsv16x_filt_sixd_feed_set(&dev_ctx, LSM6DSV16X_SIXD_FEED_LOW_PASS);
-  lsm6dsv16x_6d_threshold_set(&dev_ctx, LSM6DSV16X_DEG_60);
+  lsm6dsv16x_set_filt_sixd_feed(&dev_ctx, LSM6DSV16X_SIXD_FEED_LOW_PASS);
+  lsm6dsv16x_set_6d_threshold(&dev_ctx, LSM6DSV16X_DEG_60);
 
   /* Set Output Data Rate.*/
-  lsm6dsv16x_xl_data_rate_set(&dev_ctx, LSM6DSV16X_ODR_AT_120Hz);
+  lsm6dsv16x_set_xl_data_rate(&dev_ctx, LSM6DSV16X_ODR_AT_120Hz);
   /* Set full scale */
-  lsm6dsv16x_xl_full_scale_set(&dev_ctx, LSM6DSV16X_2g);
+  lsm6dsv16x_set_xl_full_scale(&dev_ctx, LSM6DSV16X_2g);
 
   /* wait forever (6D event handle in irq handler) */
   while (1) {

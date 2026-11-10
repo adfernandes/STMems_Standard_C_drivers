@@ -191,7 +191,7 @@ void lsm6dsv16x_self_test(void)
   platform_delay(BOOT_TIME);
 
   /* Check device ID */
-  lsm6dsv16x_device_id_get(&dev_ctx, &whoamI);
+  lsm6dsv16x_get_device_id(&dev_ctx, &whoamI);
 
   if (whoamI != LSM6DSV16X_ID)
     while (1);
@@ -200,35 +200,35 @@ void lsm6dsv16x_self_test(void)
   lsm6dsv16x_sw_por(&dev_ctx);
 
   /* Enable Block Data Update */
-  lsm6dsv16x_block_data_update_set(&dev_ctx, PROPERTY_ENABLE);
+  lsm6dsv16x_set_block_data_update(&dev_ctx, PROPERTY_ENABLE);
   /*
    * Accelerometer Self Test
    */
   /* Set Output Data Rate */
-  lsm6dsv16x_xl_data_rate_set(&dev_ctx, LSM6DSV16X_ODR_AT_60Hz);
+  lsm6dsv16x_set_xl_data_rate(&dev_ctx, LSM6DSV16X_ODR_AT_60Hz);
   /* Set full scale */
-  lsm6dsv16x_xl_full_scale_set(&dev_ctx, LSM6DSV16X_4g);
+  lsm6dsv16x_set_xl_full_scale(&dev_ctx, LSM6DSV16X_4g);
   /* Wait stable output */
   platform_delay(100);
 
   /* Check if new value available */
   do {
-    lsm6dsv16x_flag_data_ready_get(&dev_ctx, &drdy);
+    lsm6dsv16x_get_flag_data_ready(&dev_ctx, &drdy);
   } while (!drdy.drdy_xl);
 
   /* Read dummy data and discard it */
-  lsm6dsv16x_acceleration_raw_get(&dev_ctx, data_raw);
+  lsm6dsv16x_get_acceleration_raw(&dev_ctx, data_raw);
   /* Read 5 sample and get the average vale for each axis */
   memset(val_st_off, 0x00, 3 * sizeof(float));
 
   for (i = 0; i < 5; i++) {
     /* Check if new value available */
     do {
-      lsm6dsv16x_flag_data_ready_get(&dev_ctx, &drdy);
+      lsm6dsv16x_get_flag_data_ready(&dev_ctx, &drdy);
     } while (!drdy.drdy_xl);
 
     /* Read data and accumulate the mg value */
-    lsm6dsv16x_acceleration_raw_get(&dev_ctx, data_raw);
+    lsm6dsv16x_get_acceleration_raw(&dev_ctx, data_raw);
 
     for (j = 0; j < 3; j++) {
       val_st_off[j] += lsm6dsv16x_from_fs4_to_mg(data_raw[j]);
@@ -241,29 +241,29 @@ void lsm6dsv16x_self_test(void)
   }
 
   /* Enable Self Test positive (or negative) */
-  lsm6dsv16x_xl_self_test_set(&dev_ctx, LSM6DSV16X_XL_ST_NEGATIVE);
+  lsm6dsv16x_set_xl_self_test(&dev_ctx, LSM6DSV16X_XL_ST_NEGATIVE);
   //lsm6dsv16x_xl_self_test_set(&dev_ctx, LSM6DSV16X_XL_ST_POSITIVE);
   /* Wait stable output */
   platform_delay(100);
 
   /* Check if new value available */
   do {
-    lsm6dsv16x_flag_data_ready_get(&dev_ctx, &drdy);
+    lsm6dsv16x_get_flag_data_ready(&dev_ctx, &drdy);
   } while (!drdy.drdy_xl);
 
   /* Read dummy data and discard it */
-  lsm6dsv16x_acceleration_raw_get(&dev_ctx, data_raw);
+  lsm6dsv16x_get_acceleration_raw(&dev_ctx, data_raw);
   /* Read 5 sample and get the average vale for each axis */
   memset(val_st_on, 0x00, 3 * sizeof(float));
 
   for (i = 0; i < 5; i++) {
     /* Check if new value available */
     do {
-      lsm6dsv16x_flag_data_ready_get(&dev_ctx, &drdy);
+      lsm6dsv16x_get_flag_data_ready(&dev_ctx, &drdy);
     } while (!drdy.drdy_xl);
 
     /* Read data and accumulate the mg value */
-    lsm6dsv16x_acceleration_raw_get(&dev_ctx, data_raw);
+    lsm6dsv16x_get_acceleration_raw(&dev_ctx, data_raw);
 
     for (j = 0; j < 3; j++) {
       val_st_on[j] += lsm6dsv16x_from_fs4_to_mg(data_raw[j]);
@@ -291,36 +291,36 @@ void lsm6dsv16x_self_test(void)
   }
 
   /* Disable Self Test */
-  lsm6dsv16x_xl_self_test_set(&dev_ctx, LSM6DSV16X_XL_ST_DISABLE);
+  lsm6dsv16x_set_xl_self_test(&dev_ctx, LSM6DSV16X_XL_ST_DISABLE);
   /* Disable sensor. */
-  lsm6dsv16x_xl_data_rate_set(&dev_ctx, LSM6DSV16X_ODR_OFF);
+  lsm6dsv16x_set_xl_data_rate(&dev_ctx, LSM6DSV16X_ODR_OFF);
   /*
    * Gyroscope Self Test
    */
   /* Set Output Data Rate */
-  lsm6dsv16x_gy_data_rate_set(&dev_ctx, LSM6DSV16X_ODR_AT_240Hz);
+  lsm6dsv16x_set_gy_data_rate(&dev_ctx, LSM6DSV16X_ODR_AT_240Hz);
   /* Set full scale */
-  lsm6dsv16x_gy_full_scale_set(&dev_ctx, LSM6DSV16X_2000dps);
+  lsm6dsv16x_set_gy_full_scale(&dev_ctx, LSM6DSV16X_2000dps);
   /* Wait stable output */
   platform_delay(100);
 
   /* Check if new value available */
   do {
-    lsm6dsv16x_flag_data_ready_get(&dev_ctx, &drdy);
+    lsm6dsv16x_get_flag_data_ready(&dev_ctx, &drdy);
   } while (!drdy.drdy_gy);
 
   /* Read dummy data and discard it */
-  lsm6dsv16x_angular_rate_raw_get(&dev_ctx, data_raw);
+  lsm6dsv16x_get_angular_rate_raw(&dev_ctx, data_raw);
   /* Read 5 sample and get the average vale for each axis */
   memset(val_st_off, 0x00, 3 * sizeof(float));
 
   for (i = 0; i < 5; i++) {
     /* Check if new value available */
     do {
-      lsm6dsv16x_flag_data_ready_get(&dev_ctx, &drdy);
+      lsm6dsv16x_get_flag_data_ready(&dev_ctx, &drdy);
     } while (!drdy.drdy_gy);
     /* Read data and accumulate the mg value */
-    lsm6dsv16x_angular_rate_raw_get(&dev_ctx, data_raw);
+    lsm6dsv16x_get_angular_rate_raw(&dev_ctx, data_raw);
 
     for (j = 0; j < 3; j++) {
       val_st_off[j] += lsm6dsv16x_from_fs2000_to_mdps(data_raw[j]);
@@ -333,7 +333,7 @@ void lsm6dsv16x_self_test(void)
   }
 
   /* Enable Self Test positive (or negative) */
-  lsm6dsv16x_gy_self_test_set(&dev_ctx, LSM6DSV16X_GY_ST_POSITIVE);
+  lsm6dsv16x_set_gy_self_test(&dev_ctx, LSM6DSV16X_GY_ST_POSITIVE);
   //lsm6dsv16x_gy_self_test_set(&dev_ctx, LIS2DH12_GY_ST_NEGATIVE);
   /* Wait stable output */
   platform_delay(100);
@@ -343,11 +343,11 @@ void lsm6dsv16x_self_test(void)
   for (i = 0; i < 5; i++) {
     /* Check if new value available */
     do {
-      lsm6dsv16x_flag_data_ready_get(&dev_ctx, &drdy);
+      lsm6dsv16x_get_flag_data_ready(&dev_ctx, &drdy);
     } while (!drdy.drdy_gy);
 
     /* Read data and accumulate the mg value */
-    lsm6dsv16x_angular_rate_raw_get(&dev_ctx, data_raw);
+    lsm6dsv16x_get_angular_rate_raw(&dev_ctx, data_raw);
 
     for (j = 0; j < 3; j++) {
       val_st_on[j] += lsm6dsv16x_from_fs2000_to_mdps(data_raw[j]);
@@ -373,9 +373,9 @@ void lsm6dsv16x_self_test(void)
   }
 
   /* Disable Self Test */
-  lsm6dsv16x_gy_self_test_set(&dev_ctx, LSM6DSV16X_GY_ST_DISABLE);
+  lsm6dsv16x_set_gy_self_test(&dev_ctx, LSM6DSV16X_GY_ST_DISABLE);
   /* Disable sensor. */
-  lsm6dsv16x_xl_data_rate_set(&dev_ctx, LSM6DSV16X_ODR_OFF);
+  lsm6dsv16x_set_xl_data_rate(&dev_ctx, LSM6DSV16X_ODR_OFF);
 
   if (st_result == ST_PASS) {
     snprintf((char *)tx_buffer, sizeof(tx_buffer), "Self Test - PASS\r\n" );

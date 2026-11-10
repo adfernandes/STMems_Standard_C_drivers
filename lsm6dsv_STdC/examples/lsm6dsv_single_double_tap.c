@@ -151,7 +151,7 @@ void lsm6dsv_single_double_tap_handler(void)
   lsm6dsv_all_sources_t status;
 
   /* Read output only if new xl value is available */
-  lsm6dsv_all_sources_get(&dev_ctx, &status);
+  lsm6dsv_get_all_sources(&dev_ctx, &status);
 
   if (status.single_tap) {
     stap_event_catched = 1;
@@ -179,7 +179,7 @@ void lsm6dsv_single_double_tap(void)
   platform_delay(BOOT_TIME);
 
   /* Check device ID */
-  lsm6dsv_device_id_get(&dev_ctx, &whoamI);
+  lsm6dsv_get_device_id(&dev_ctx, &whoamI);
 
   if (whoamI != LSM6DSV_ID)
     while (1);
@@ -188,34 +188,34 @@ void lsm6dsv_single_double_tap(void)
   lsm6dsv_sw_por(&dev_ctx);
 
   /* Enable Block Data Update */
-  lsm6dsv_block_data_update_set(&dev_ctx, PROPERTY_ENABLE);
+  lsm6dsv_set_block_data_update(&dev_ctx, PROPERTY_ENABLE);
 
   pin_int.double_tap = PROPERTY_ENABLE;
   pin_int.single_tap = PROPERTY_ENABLE;
-  lsm6dsv_pin_int1_route_set(&dev_ctx, &pin_int);
+  lsm6dsv_set_pin_int1_route(&dev_ctx, &pin_int);
   //lsm6dsv_pin_int2_route_set(&dev_ctx, &pin_int);
 
   irq.enable = 1;
   irq.lir = 0;
-  lsm6dsv_interrupt_enable_set(&dev_ctx, irq);
+  lsm6dsv_set_interrupt_enable(&dev_ctx, irq);
 
   tap.tap_z_en = 1;
-  lsm6dsv_tap_detection_set(&dev_ctx, tap);
+  lsm6dsv_set_tap_detection(&dev_ctx, tap);
 
   tap_ths.z = 3;
-  lsm6dsv_tap_thresholds_set(&dev_ctx, tap_ths);
+  lsm6dsv_set_tap_thresholds(&dev_ctx, tap_ths);
 
   tap_win.tap_gap = 7;
   tap_win.shock = 3;
   tap_win.quiet = 3;
-  lsm6dsv_tap_time_windows_set(&dev_ctx, tap_win);
+  lsm6dsv_set_tap_time_windows(&dev_ctx, tap_win);
 
-  lsm6dsv_tap_mode_set(&dev_ctx, LSM6DSV_BOTH_SINGLE_DOUBLE);
+  lsm6dsv_set_tap_mode(&dev_ctx, LSM6DSV_BOTH_SINGLE_DOUBLE);
 
   /* Set Output Data Rate.*/
-  lsm6dsv_xl_data_rate_set(&dev_ctx, LSM6DSV_ODR_AT_480Hz);
+  lsm6dsv_set_xl_data_rate(&dev_ctx, LSM6DSV_ODR_AT_480Hz);
   /* Set full scale */
-  lsm6dsv_xl_full_scale_set(&dev_ctx, LSM6DSV_8g);
+  lsm6dsv_set_xl_full_scale(&dev_ctx, LSM6DSV_8g);
 
   /* wait forever (6D event handle in irq handler) */
   while (1) {

@@ -182,7 +182,7 @@ void lsm6dsv16x_read_data_irq(void)
   platform_delay(BOOT_TIME);
 
   /* Check device ID */
-  lsm6dsv16x_device_id_get(&dev_ctx, &whoamI);
+  lsm6dsv16x_get_device_id(&dev_ctx, &whoamI);
 
   if (whoamI != LSM6DSV16X_ID)
     while (1);
@@ -191,32 +191,32 @@ void lsm6dsv16x_read_data_irq(void)
   lsm6dsv16x_sw_por(&dev_ctx);
 
   /* Enable Block Data Update */
-  lsm6dsv16x_block_data_update_set(&dev_ctx, PROPERTY_ENABLE);
+  lsm6dsv16x_set_block_data_update(&dev_ctx, PROPERTY_ENABLE);
 
 #if defined(NUCLEO_H503RB)
   /* if I3C is used then INT pin must be explicitly enabled */
-  lsm6dsv16x_i3c_int_en_set(&dev_ctx, 1);
+  lsm6dsv16x_set_i3c_int_en(&dev_ctx, 1);
 #endif
 
   pin_int.drdy_xl = PROPERTY_ENABLE;
-  lsm6dsv16x_pin_int1_route_set(&dev_ctx, &pin_int);
+  lsm6dsv16x_set_pin_int1_route(&dev_ctx, &pin_int);
   //lsm6dsv16x_pin_int2_route_set(&dev_ctx, &pin_int);
 
   /* Set Output Data Rate.
    * Selected data rate have to be equal or greater with respect
    * with MLC data rate.
    */
-  lsm6dsv16x_xl_data_rate_set(&dev_ctx, LSM6DSV16X_ODR_AT_120Hz);
+  lsm6dsv16x_set_xl_data_rate(&dev_ctx, LSM6DSV16X_ODR_AT_120Hz);
   /* Set full scale */
-  lsm6dsv16x_xl_full_scale_set(&dev_ctx, LSM6DSV16X_2g);
+  lsm6dsv16x_set_xl_full_scale(&dev_ctx, LSM6DSV16X_2g);
 
   /* Configure filtering chain */
   filt_settling_mask.drdy = PROPERTY_ENABLE;
   filt_settling_mask.irq_xl = PROPERTY_ENABLE;
   filt_settling_mask.irq_g = PROPERTY_ENABLE;
-  lsm6dsv16x_filt_settling_mask_set(&dev_ctx, filt_settling_mask);
-  lsm6dsv16x_filt_xl_lp2_set(&dev_ctx, PROPERTY_ENABLE);
-  lsm6dsv16x_filt_xl_lp2_bandwidth_set(&dev_ctx, LSM6DSV16X_XL_STRONG);
+  lsm6dsv16x_set_filt_settling_mask(&dev_ctx, filt_settling_mask);
+  lsm6dsv16x_set_filt_xl_lp2(&dev_ctx, PROPERTY_ENABLE);
+  lsm6dsv16x_set_filt_xl_lp2_bandwidth(&dev_ctx, LSM6DSV16X_XL_STRONG);
 
   /* handle drdy events */
   while (1) {
@@ -226,12 +226,12 @@ void lsm6dsv16x_read_data_irq(void)
       drdy_event = 0;
 
       /* Read output only if new xl value is available */
-      lsm6dsv16x_flag_data_ready_get(&dev_ctx, &drdy);
+      lsm6dsv16x_get_flag_data_ready(&dev_ctx, &drdy);
 
       if (drdy.drdy_xl) {
         /* Read acceleration field data */
         memset(data_raw_acceleration, 0x00, 3 * sizeof(int16_t));
-        lsm6dsv16x_acceleration_raw_get(&dev_ctx, data_raw_acceleration);
+        lsm6dsv16x_get_acceleration_raw(&dev_ctx, data_raw_acceleration);
         acceleration_mg[0] =
           lsm6dsv16x_from_fs2_to_mg(data_raw_acceleration[0]);
         acceleration_mg[1] =
